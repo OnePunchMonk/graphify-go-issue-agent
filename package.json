@@ -1,0 +1,26 @@
+{
+  "name": "graphify-go-issue-agent",
+  "version": "0.1.0",
+  "description": "Agentic issue-solving platform for approved open-source Go repositories.",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "go-issue-agent": "./bin/go-issue-agent.js"
+  },
+  "scripts": {
+    "check": "node scripts/check-syntax.js",
+    "test": "node --test tests/*.test.js",
+    "validate": "npm run check && npm test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "agent",
+    "gemini",
+    "graphify",
+    "go",
+    "github-issues"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,7 @@
+{
+  "number": 1561,
+  "title": "hostname_rfc1123 wrongly accepts invalid dotted decimal hostnames",
+  "body": "The `hostname_rfc1123` validator accepts `277.168.0.1`. It should reject dotted-decimal lookalikes that are not valid IP addresses while keeping valid hostnames accepted. This is related to RFC 1123 hostname behavior.",
+  "url": "https://github.com/go-playground/validator/issues/1561",
+  "labels": ["bug"]
+}

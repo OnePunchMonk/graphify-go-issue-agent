@@ -1,0 +1,7 @@
+.DS_Store
+.env
+.cache/
+node_modules/
+runs/
+workspaces/
+*.log
