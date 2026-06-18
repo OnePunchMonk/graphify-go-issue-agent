@@ -1,17 +1,17 @@
 # Graphify Go Issue Agent
 
-Agentic AI platform for solving small and medium GitHub issues in approved open-source Go repositories.
+Python refactor of the agentic AI platform for solving small and medium GitHub issues in approved open-source Go repositories.
 
-The system is built around Graphify-style repository intelligence, Gemini 2.5 Flash, and a structured multi-agent loop:
+The system keeps the original multi-agent shape:
 
-- Graph builder: uses real Graphify artifacts when available, otherwise builds a Go-aware graph locally.
+- Graph builder: uses Graphify artifacts when available, otherwise builds a deterministic Go graph locally.
 - Intent normaliser: turns an issue into a behavioral spec.
-- Retrieval planner: ranks the issue-induced code subgraph and selects files/tests.
+- Retrieval planner: ranks the issue-induced code subgraph and selects files and tests.
 - Research agent: captures repo conventions and standards references.
 - Code agent: asks Gemini 2.5 Flash for a minimal unified diff.
 - Tester: runs targeted and repo-standard validation commands.
 - Reviewer: scores correctness, scope, tests, and risk, then loops until confidence is high enough.
-- PR generator: writes a title/body with summary, changes, validation, and issue closure line.
+- PR generator: writes a title and body with summary, changes, validation, and issue closure.
 
 Approved repositories:
 
@@ -23,13 +23,12 @@ Approved repositories:
 ## Setup
 
 ```bash
-cp .env.example .env
 export GEMINI_API_KEY="your_google_ai_studio_key"
 export GEMINI_MODEL="gemini-2.5-flash"
-export GEMINI_ENABLE_SEARCH=1 # optional: lets the research agent use Gemini Google Search grounding
+export GEMINI_ENABLE_SEARCH=1
 ```
 
-No npm dependencies are required for the framework itself. It uses Node 20+ and direct HTTPS calls to the Gemini API.
+No third-party Python packages are required. Run it directly from the repo with Python 3.9+.
 
 If Graphify is installed, the agent will call it. If not, it falls back to a deterministic Go graph builder and still emits `graph.json` plus `GRAPH_REPORT.md`.
 
@@ -38,7 +37,7 @@ If Graphify is installed, the agent will call it. If not, it falls back to a det
 Use an existing local checkout:
 
 ```bash
-./bin/go-issue-agent.js solve \
+python3 bin/go-issue-agent.js solve \
   --repo go-playground/validator \
   --issue 1561 \
   --repo-path ../validator
@@ -47,7 +46,7 @@ Use an existing local checkout:
 Let the agent clone the approved repository:
 
 ```bash
-./bin/go-issue-agent.js solve \
+python3 bin/go-issue-agent.js solve \
   --repo go-playground/validator \
   --issue 1561 \
   --workdir workspaces
@@ -56,7 +55,7 @@ Let the agent clone the approved repository:
 Offline smoke run against the bundled fixture:
 
 ```bash
-./bin/go-issue-agent.js solve \
+python3 bin/go-issue-agent.js solve \
   --repo go-playground/validator \
   --issue 1561 \
   --offline \
@@ -70,7 +69,7 @@ Offline smoke run against the bundled fixture:
 Build only graph artifacts:
 
 ```bash
-./bin/go-issue-agent.js graph \
+python3 bin/go-issue-agent.js graph \
   --repo-path fixtures/tiny-validator \
   --out-dir runs/tiny-graph
 ```
@@ -78,12 +77,12 @@ Build only graph artifacts:
 Run the accepted issue/PR benchmark suite:
 
 ```bash
-./bin/go-issue-agent.js benchmark \
+python3 bin/go-issue-agent.js benchmark \
   --query-budget 100 \
   --out-dir runs/benchmark/latest
 ```
 
-The benchmark uses repository maps plus graph/code-search retrieval to score whether the agent identifies the same files as accepted PRs from the approved repositories. Full Gemini patch generation is intentionally separate from this retrieval benchmark because it requires `GEMINI_API_KEY` and can be slower/costly.
+The benchmark uses repository maps plus graph and code-search retrieval to score whether the agent identifies the same files as accepted PRs from the approved repositories.
 
 ## Outputs
 
@@ -109,7 +108,7 @@ Benchmark runs additionally write:
 ## Validation
 
 ```bash
-npm run validate
+python3 -m unittest discover -s tests -p 'test_*.py'
 ```
 
-This runs syntax checks and the offline test suite.
+`bin/go-issue-agent.js` is a Python launcher kept at the old path so existing scripts do not break.

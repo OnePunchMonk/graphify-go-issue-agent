@@ -1,7 +1,13 @@
-#!/usr/bin/env node
-import { main } from "../src/cli.js";
+#!/usr/bin/env python3
+import sys
+from pathlib import Path
 
-main(process.argv.slice(2)).catch((error) => {
-  console.error(error.stack || error.message || String(error));
-  process.exitCode = 1;
-});
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from go_issue_agent.cli import main
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
