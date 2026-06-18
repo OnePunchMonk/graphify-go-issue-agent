@@ -1,5 +1,5 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { existsSync, readdirSync, statSync } from "node:fs";
+import { existsSync, lstatSync, readdirSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 
 const DEFAULT_IGNORES = new Set([
@@ -39,7 +39,10 @@ export function walkFiles(root, options = {}) {
         continue;
       }
       const full = join(dir, entry);
-      const stat = statSync(full);
+      const stat = lstatSync(full);
+      if (stat.isSymbolicLink()) {
+        continue;
+      }
       if (stat.isDirectory()) {
         walk(full);
       } else if (!extensions || extensions.some((ext) => entry.endsWith(ext))) {

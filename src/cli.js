@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 import { buildRepositoryGraph } from "./graph/graphify-adapter.js";
 import { solveIssue } from "./pipeline.js";
+import { runBenchmark } from "./benchmark/runner.js";
 import { createLogger } from "./core/logger.js";
 import { assertApprovedProject, APPROVED_PROJECTS } from "./approved-projects.js";
 
@@ -27,6 +28,16 @@ export async function main(argv) {
     const logger = createLogger({ verbose: options.verbose });
     await buildRepositoryGraph({ repoPath, outDir, logger });
     console.log(`Graph artifacts: ${outDir}`);
+    return;
+  }
+
+  if (command === "benchmark") {
+    const result = await runBenchmark(options);
+    console.log(`Benchmark artifacts: ${result.outDir}`);
+    console.log(`Completed: ${result.summary.aggregate.completed}/${result.summary.aggregate.total}`);
+    console.log(`Query budget: ${result.summary.queryBudget}`);
+    console.log(`Hit@5: ${result.summary.aggregate.hitAt5}/${result.summary.aggregate.completed}`);
+    console.log(`Avg recall@5: ${result.summary.aggregate.avgRecallAt5}`);
     return;
   }
 
@@ -107,6 +118,7 @@ function printHelp() {
 Commands:
   solve       Run the full issue-solving loop
   graph       Build graph artifacts for a local repo
+  benchmark   Run the issue/PR file-identification benchmark suite
   approved    List approved repositories
   check-repo  Validate a repository is approved
 
@@ -114,6 +126,7 @@ Examples:
   go-issue-agent solve --repo go-playground/validator --issue 1561 --repo-path ../validator
   go-issue-agent solve --repo go-playground/validator --issue 860 --offline --no-apply --no-tests --issue-file fixtures/issue-860.json --repo-path fixtures/tiny-validator
   go-issue-agent graph --repo-path ../validator --out-dir runs/validator-graph
+  go-issue-agent benchmark --out-dir runs/benchmark/latest
 
 Important options:
   --repo <owner/name>        One approved GitHub repository
@@ -127,5 +140,8 @@ Important options:
   --no-tests                 Skip validation commands
   --threshold <0-1>          Review confidence threshold, default 0.8
   --max-iterations <n>       Code/test/review iterations, default 3
+  --cases <id,id>            Benchmark case ids to run
+  --no-clone                 Benchmark an already checked out --repo-path
+  --query-budget <n>         Total retrieval queries across the benchmark, default 100
 `);
 }

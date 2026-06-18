@@ -75,6 +75,16 @@ Build only graph artifacts:
   --out-dir runs/tiny-graph
 ```
 
+Run the accepted issue/PR benchmark suite:
+
+```bash
+./bin/go-issue-agent.js benchmark \
+  --query-budget 100 \
+  --out-dir runs/benchmark/latest
+```
+
+The benchmark uses repository maps plus graph/code-search retrieval to score whether the agent identifies the same files as accepted PRs from the approved repositories. Full Gemini patch generation is intentionally separate from this retrieval benchmark because it requires `GEMINI_API_KEY` and can be slower/costly.
+
 ## Outputs
 
 Each `solve` run writes:
@@ -89,6 +99,12 @@ Each `solve` run writes:
 - `PR_DRAFT.md`
 - `graph/graph.json`
 - `graph/GRAPH_REPORT.md`
+
+Benchmark runs additionally write:
+
+- `benchmark-results.json`
+- `BENCHMARK_REPORT.md`
+- per-case `repo-map.json`
 
 ## Validation
 
